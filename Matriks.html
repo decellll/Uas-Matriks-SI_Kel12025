@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Matriks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --bg-color: #f8f9fa;
+            --text-color: #2b2d42;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            padding: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .matrix-input {
+            width: 70px;
+            height: 45px;
+            text-align: center;
+            margin: 3px;
+            font-size: 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+        }
+
+        .matrix-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: none;
+            outline: none;
+        }
+
+        .result-box {
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .nav-pills .nav-link {
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 12px 24px;
+            margin: 0 5px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .matrix-label {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .equation-row {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .operation-text {
+            font-weight: 500;
+            margin: 0 8px;
+        }
+
+        .result-header {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 4px;
+            margin-top: 15px;
+        }
+
+        .result-table td {
+            padding: 12px;
+            text-align: center;
+            background-color: white;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .page-title {
+            color: var(--text-color);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .section-title {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 768px) {
+            .matrix-input {
+                width: 60px;
+                height: 40px;
+                font-size: 12px;
+                margin: 2px;
+            }
+            
+            .nav-pills .nav-link {
+                padding: 8px 16px;
+                font-size: 14px;
+                margin: 2px;
+            }
+
+            .equation-row {
+                padding: 10px;
+                flex-wrap: wrap;
+            }
+
+            .operation-text {
+                font-size: 14px;
+                margin: 0 4px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .page-title {
+                font-size: 1.5em;
+            }
+
+            .section-title {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Kalkulator Matriks Terpadu</h1>
+        
+        <!-- Navigation Pills -->
+        <ul class="nav nav-pills nav-fill mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="pill" href="#cramer">Metode Cramer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="pill" href="#inverse">Matriks Invers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="pill" href="#arithmetic">Operasi Matriks</a>
+            </li>
+        </ul>
+
+        <!-- Calculator Sections -->
+        <div class="tab-content">
+            <!-- Cramer's Rule Section -->
+            <div id="cramer" class="tab-pane fade show active">
+                <h3 class="section-title">Sistem Persamaan Linear (Metode Cramer)</h3>
+                <div class="card">
+                    <div class="matrix-label">Masukkan Sistem Persamaan (3x3)</div>
+                    <div class="equation-system">
+                        <div class="equation-row">
+                            <input type="number" class="form-control matrix-input" id="cr_a11" value="3" step="any">
+                            <span class="operation-text">x +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a12" value="4" step="any">
+                            <span class="operation-text">y +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a13" value="-5" step="any">
+                            <span class="operation-text">z =</span>
+                            <input type="number" class="form-control matrix-input" id="cr_b1" value="12" step="any">
+                        </div>
+                        <div class="equation-row">
+                            <input type="number" class="form-control matrix-input" id="cr_a21" value="2" step="any">
+                            <span class="operation-text">x +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a22" value="5" step="any">
+                            <span class="operation-text">y +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a23" value="1" step="any">
+                            <span class="operation-text">z =</span>
+                            <input type="number" class="form-control matrix-input" id="cr_b2" value="17" step="any">
+                        </div>
+                        <div class="equation-row">
+                            <input type="number" class="form-control matrix-input" id="cr_a31" value="6" step="any">
+                            <span class="operation-text">x +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a32" value="-2" step="any">
+                            <span class="operation-text">y +</span>
+                            <input type="number" class="form-control matrix-input" id="cr_a33" value="3" step="any">
+                            <span class="operation-text">z =</span>
+                            <input type="number" class="form-control matrix-input" id="cr_b3" value="17" step="any">
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary" onclick="solveCramer()">Selesaikan Sistem</button>
+                    </div>
+                    <div class="result-box">
+                        <div id="cramer_determinants"></div>
+                        <div id="cramer_result"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matrix Inverse Section -->
+            <div id="inverse" class="tab-pane fade">
+                <h3 class="section-title">Kalkulator Matriks Invers 3x3</h3>
+                <div class="card">
+                    <div class="matrix-label">Masukkan Matriks</div>
+                    <div class="matrix-container">
+                        <div class="d-flex justify-content-center">
+                            <input type="number" class="form-control matrix-input" id="inv_a11" value="-1" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a12" value="4" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a13" value="2" step="any">
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <input type="number" class="form-control matrix-input" id="inv_a21" value="2" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a22" value="7" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a23" value="-4" step="any">
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <input type="number" class="form-control matrix-input" id="inv_a31" value="3" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a32" value="-9" step="any">
+                            <input type="number" class="form-control matrix-input" id="inv_a33" value="11" step="any">
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary" onclick="calculateInverse()">Hitung Invers</button>
+                    </div>
+                    <div class="result-box">
+                        <div id="inverse_result"></div>
+                        <div id="inverse_determinant" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matrix Arithmetic Section -->
+            <div id="arithmetic" class="tab-pane fade">
+                <h3 class="section-title">Operasi Matriks Lanjutan</h3>
+                <div class="card">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="matrix-label">Matriks A</div>
+                            <div class="matrix-container">
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_a11" value="2" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_a12" value="-3" step="any">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_a21" value="4" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_a22" value="2" step="any">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="matrix-label">Matriks B</div>
+                            <div class="matrix-container">
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_b11" value="-2" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_b12" value="4" step="any">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_b21" value="1" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_b22" value="7" step="any">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="matrix-label">Matriks C</div>
+                            <div class="matrix-container">
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_c11" value="4" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_c12" value="7" step="any">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_c21" value="5" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_c22" value="-2" step="any">
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <input type="number" class="form-control matrix-input" id="ar_c31" value="-1" step="any">
+                                    <input type="number" class="form-control matrix-input" id="ar_c32" value="1" step="any">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <select id="ar_operation" class="form-select">
+                                <option value="CA">a. CA (C × A)</option>
+                                <option value="AtAB">b. A^t(A + B)</option>
+                                <option value="CBt">c. (CB)^t</option>
+                                <option value="BAtAtB">d. (B × A^t) - (A^t × B)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="calculateArithmetic()">Hitung</button>
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <div id="arithmetic_result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Fungsi format angka
+        function formatNumber(num) {
+            // Menghilangkan nol di belakang desimal dan mengubah -0 menjadi 0
+            return parseFloat(parseFloat(num).toFixed(4)) === 0 ? "0" : parseFloat(num).toString();
+        }
+
+        // Fungsi Cramer
+        function getCramerSystem() {
+            let coefficients = [];
+            let constants = [];
+            
+            for(let i = 1; i <= 3; i++) {
+                let row = [];
+                for(let j = 1; j <= 3; j++) {
+                    row.push(parseFloat(document.getElementById(`cr_a${i}${j}`).value) || 0);
+                }
+                coefficients.push(row);
+                constants.push(parseFloat(document.getElementById(`cr_b${i}`).value) || 0);
+            }
+            
+            return { coefficients, constants };
+        }
+
+        function calculateDeterminant(matrix) {
+            return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1])
+                 - matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0])
+                 + matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+        }
+
+        function replaceColumn(matrix, column, values) {
+            let newMatrix = matrix.map(row => [...row]);
+            for(let i = 0; i < 3; i++) {
+                newMatrix[i][column] = values[i];
+            }
+            return newMatrix;
+        }
+
+        function solveCramer() {
+            const { coefficients, constants } = getCramerSystem();
+            
+            const D = calculateDeterminant(coefficients);
+            
+            if(Math.abs(D) < 1e-10) {
+                document.getElementById('cramer_result').innerHTML = 
+                    '<div class="alert alert-danger">Sistem tidak memiliki solusi unik (determinan = 0)</div>';
+                document.getElementById('cramer_determinants').innerHTML = '';
+                return;
+            }
+
+            const Dx = calculateDeterminant(replaceColumn(coefficients, 0, constants));
+            const Dy = calculateDeterminant(replaceColumn(coefficients, 1, constants));
+            const Dz = calculateDeterminant(replaceColumn(coefficients, 2, constants));
+
+            const x = Dx / D;
+            const y = Dy / D;
+            const z = Dz / D;
+
+            let determinantsHtml = `
+                <div class="result-header">Determinan:</div>
+                <div class="result-value">D = ${formatNumber(D)}</div>
+                <div class="result-value">Dx = ${formatNumber(Dx)}</div>
+                <div class="result-value">Dy = ${formatNumber(Dy)}</div>
+                <div class="result-value">Dz = ${formatNumber(Dz)}</div>
+            `;
+
+            let solutionsHtml = `
+                <div class="result-header">Solusi:</div>
+                <div class="result-value">x = ${formatNumber(x)}</div>
+                <div class="result-value">y = ${formatNumber(y)}</div>
+                <div class="result-value">z = ${formatNumber(z)}</div>
+            `;
+
+            document.getElementById('cramer_determinants').innerHTML = determinantsHtml;
+            document.getElementById('cramer_result').innerHTML = solutionsHtml;
+        }
+
+        // Fungsi Invers Matriks
+        function getInverseMatrix() {
+            let matrix = [];
+            for(let i = 1; i <= 3; i++) {
+                let row = [];
+                for(let j = 1; j <= 3; j++) {
+                    row.push(parseFloat(document.getElementById(`inv_a${i}${j}`).value) || 0);
+                }
+                matrix.push(row);
+            }
+            return matrix;
+        }
+
+        function calculateCofactor(m, row, col) {
+            let subMatrix = [];
+            let subRow = 0;
+            
+            for(let i = 0; i < 3; i++) {
+                if(i === row) continue;
+                subMatrix[subRow] = [];
+                let subCol = 0;
+                for(let j = 0; j < 3; j++) {
+                    if(j === col) continue;
+                    subMatrix[subRow][subCol] = m[i][j];
+                    subCol++;
+                }
+                subRow++;
+            }
+            
+            return Math.pow(-1, row + col) * 
+                   (subMatrix[0][0] * subMatrix[1][1] - subMatrix[0][1] * subMatrix[1][0]);
+        }
+
+        function calculateInverse() {
+            const matrix = getInverseMatrix();
+            const det = calculateDeterminant(matrix);
+            
+            if(Math.abs(det) < 1e-10) {
+                document.getElementById('inverse_result').innerHTML = 
+                    '<div class="alert alert-danger">Matriks tidak memiliki invers (determinan = 0)</div>';
+                document.getElementById('inverse_determinant').innerHTML = '';
+                return;
+            }
+
+            let cofactorMatrix = [];
+            for(let i = 0; i < 3; i++) {
+                cofactorMatrix[i] = [];
+                for(let j = 0; j < 3; j++) {
+                    cofactorMatrix[i][j] = calculateCofactor(matrix, i, j);
+                }
+            }
+
+            let adjugate = [];
+            for(let i = 0; i < 3; i++) {
+                adjugate[i] = [];
+                for(let j = 0; j < 3; j++) {
+                    adjugate[i][j] = cofactorMatrix[j][i];
+                }
+            }
+
+            let inverse = adjugate.map(row => row.map(val => val / det));
+
+            let html = '<div class="result-header">Matriks Invers:</div><table class="result-table">';
+            for(let row of inverse) {
+                html += '<tr>';
+                for(let val of row) {
+                    html += `<td>${formatNumber(val)}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            
+            document.getElementById('inverse_result').innerHTML = html;
+            document.getElementById('inverse_determinant').innerHTML = 
+                `<div class="result-header">Determinan: ${formatNumber(det)}</div>`;
+        }
+
+        // Fungsi Operasi Matriks
+        function getArithmeticMatrix(prefix, rows, cols) {
+            let matrix = [];
+            for(let i = 1; i <= rows; i++) {
+                let row = [];
+                for(let j = 1; j <= cols; j++) {
+                    row.push(parseFloat(document.getElementById(`ar_${prefix}${i}${j}`).value) || 0);
+                }
+                matrix.push(row);
+            }
+            return matrix;
+        }
+
+        function transpose(matrix) {
+            return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+        }
+
+        function multiplyMatrices(a, b) {
+            let result = [];
+            for(let i = 0; i < a.length; i++) {
+                result[i] = [];
+                for(let j = 0; j < b[0].length; j++) {
+                    result[i][j] = 0;
+                    for(let k = 0; k < a[0].length; k++) {
+                        result[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+
+        function addMatrices(a, b) {
+            return a.map((row, i) => row.map((val, j) => val + b[i][j]));
+        }
+
+        function subtractMatrices(a, b) {
+            return a.map((row, i) => row.map((val, j) => val - b[i][j]));
+        }
+
+        function calculateArithmetic() {
+            const operation = document.getElementById('ar_operation').value;
+            let result;
+            
+            const A = getArithmeticMatrix('a', 2, 2);
+            const B = getArithmeticMatrix('b', 2, 2);
+            const C = getArithmeticMatrix('c', 3, 2);
+
+            switch(operation) {
+                case 'CA':
+                    result = multiplyMatrices(C, A);
+                    break;
+                case 'AtAB':
+                    const At = transpose(A);
+                    const AplusB = addMatrices(A, B);
+                    result = multiplyMatrices(At, AplusB);
+                    break;
+                case 'CBt':
+                    const Bt = transpose(B);
+                    const CB = multiplyMatrices(C, Bt);
+                    result = transpose(CB);
+                    break;
+                case 'BAtAtB':
+                    const At2 = transpose(A);
+                    const BAt = multiplyMatrices(B, At2);
+                    const AtB = multiplyMatrices(At2, B);
+                    result = subtractMatrices(BAt, AtB);
+                    break;
+            }
+
+            let html = '<div class="result-header">Hasil:</div><table class="result-table">';
+            for(let row of result) {
+                html += '<tr>';
+                for(let val of row) {
+                    html += `<td>${formatNumber(val)}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            
+            document.getElementById('arithmetic_result').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
+                        
